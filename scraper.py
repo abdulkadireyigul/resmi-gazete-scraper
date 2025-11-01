@@ -56,22 +56,24 @@ def get_todays_entries():
              print(f"Extracted gazette number: {gazete_sayisi}")
         else:
              print("Warning: Could not extract gazette number from title.")
+             # Gazete sayısı olmadan devam etmenin anlamı yok, çünkü state'i karşılaştıramayız
+             return None, None
 
 
-        try:
-            today_str_pattern = datetime.now().strftime("%#d %B %Y").lower()
-        except ValueError:
-             try:
-                today_str_pattern = datetime.now().strftime("%-d %B %Y").lower()
-             except ValueError:
-                print("Warning: Failed to format date correctly. Using fallback.")
-                today_str_pattern = datetime.now().strftime("%d %B %Y").lower()
+        # try:
+        #     today_str_pattern = datetime.now().strftime("%#d %B %Y").lower()
+        # except ValueError:
+        #      try:
+        #         today_str_pattern = datetime.now().strftime("%-d %B %Y").lower()
+        #      except ValueError:
+        #         print("Warning: Failed to format date correctly. Using fallback.")
+        #         today_str_pattern = datetime.now().strftime("%d %B %Y").lower()
 
-        if today_str_pattern not in title_text.lower():
-            print(f"Today's date pattern '{today_str_pattern}' not found in the title.")
-            return None, gazete_sayisi # Yayınlanmamış ama sayıyı bulduysak döndürelim
+        # if today_str_pattern not in title_text.lower():
+        #     print(f"Today's date pattern '{today_str_pattern}' not found in the title.")
+        #     return None, gazete_sayisi # Yayınlanmamış ama sayıyı bulduysak döndürelim
 
-        print("Today's date confirmed in the title.")
+        # print("Today's date confirmed in the title.")
 
         content_div = soup.find('div', id='html-content')
         if not content_div:
