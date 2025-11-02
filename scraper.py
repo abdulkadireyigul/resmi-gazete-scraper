@@ -31,9 +31,40 @@ def get_todays_entries():
     Resmi Gazete ana sayfasını kontrol eder, bugünün yayınını doğrular
     ve içindeki tüm maddelerin linklerini, başlıklarını ve gazete sayısını döndürür.
     """
+    
+    # 1. GitHub Secrets'tan (ortam değişkenleri yoluyla) 4 bilgiyi oku
+    proxy_host = os.environ.get('PROXY_HOST')
+    proxy_port = os.environ.get('PROXY_PORT')
+    proxy_user = os.environ.get('PROXY_USERNAME')
+    proxy_pass = os.environ.get('PROXY_PASSWORD')
+
+    proxies = None # Başlangıçta proxy yok
+    
+    # 4 değişkenin tamamı ortamda mevcutsa proxy'yi ayarla
+    if proxy_host and proxy_port and proxy_user and proxy_pass:
+        # Python 'requests' kütüphanesi için URL'i bu formatta birleştirmemiz gerekiyor:
+        # http://kullaniciadi:sifre@host:port
+        proxy_url = f"http://{proxy_user}:{proxy_pass}@{proxy_host}:{proxy_port}"
+        
+        # Requests modülünün anlayacağı proxy dict'ini oluştur
+        proxies = {
+            'http': proxy_url,
+            'https': proxy_url # https siteleri için de aynı proxy'yi kullan
+        }
+        print(f"Proxy credentials found. Using Bright Data proxy: {proxy_host}:{proxy_port}")
+    else:
+        print("Proxy credentials not found in environment. Running without proxy (local test?).")
+    
     try:
         print("Fetching main page...")
-        response = requests.get(RESMI_GAZETE_URL, timeout=30, headers=HEADERS)
+        # response = requests.get(RESMI_GAZETE_URL, timeout=30, headers=HEADERS)
+        response = requests.get(
+            RESMI_GAZETE_URL, 
+            timeout=60, 
+            headers=HEADERS, 
+            proxies=proxies,
+            verify=False
+        )
         response.raise_for_status()
         print("Main page fetched successfully.")
 
@@ -102,7 +133,7 @@ def get_todays_entries():
         return entries, gazete_sayisi # Hem listeyi hem sayıyı döndür
 
     except requests.exceptions.Timeout:
-        print(f"Error: Request timed out after 30 seconds.")
+        print(f"Error: Request timed out after 60 seconds.")
         return None, None
     except requests.exceptions.RequestException as e:
         print(f"Error fetching main page: {e}")

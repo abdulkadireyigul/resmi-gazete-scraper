@@ -32,6 +32,11 @@ jobs:
 
       # 4. Adım: Scraper script'ini çalıştır
       - name: Run scraper
+        env:
+          PROXY_HOST: ${{ secrets.PROXY_HOST }}
+          PROXY_PORT: ${{ secrets.PROXY_PORT }}
+          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
         run: python scraper.py
 
       # 5. Adım: Değişiklikleri (varsa) repoya commit'le ve push'la
