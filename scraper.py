@@ -33,52 +33,36 @@ def get_todays_entries():
     """
     
     # 1. GitHub Secrets'tan (ortam değişkenleri yoluyla) 4 bilgiyi oku
-    # proxy_host = os.environ.get('PROXY_HOST')
-    # proxy_port = os.environ.get('PROXY_PORT')
-    # proxy_user = os.environ.get('PROXY_USERNAME')
-    # proxy_pass = os.environ.get('PROXY_PASSWORD')
-    
-    # Cloudflare Worker proxy URL'ini ortam değişkeninden oku
-    cf_worker_proxy = os.environ.get('CF_WORKER_PROXY')
+    proxy_host = os.environ.get('PROXY_HOST')
+    proxy_port = os.environ.get('PROXY_PORT')
+    proxy_user = os.environ.get('PROXY_USERNAME')
+    proxy_pass = os.environ.get('PROXY_PASSWORD')
 
-    # proxies = None # Başlangıçta proxy yok
+    proxies = None # Başlangıçta proxy yok
     
     # 4 değişkenin tamamı ortamda mevcutsa proxy'yi ayarla
-    # if proxy_host and proxy_port and proxy_user and proxy_pass:
-    #     # Python 'requests' kütüphanesi için URL'i bu formatta birleştirmemiz gerekiyor:
-    #     # http://kullaniciadi:sifre@host:port
-    #     proxy_url = f"http://{proxy_user}:{proxy_pass}@{proxy_host}:{proxy_port}"
+    if proxy_host and proxy_port and proxy_user and proxy_pass:
+        # Python 'requests' kütüphanesi için URL'i bu formatta birleştirmemiz gerekiyor:
+        # http://kullaniciadi:sifre@host:port
+        proxy_url = f"http://{proxy_user}:{proxy_pass}@{proxy_host}:{proxy_port}"
         
-    #     # Requests modülünün anlayacağı proxy dict'ini oluştur
-    #     proxies = {
-    #         'http': proxy_url,
-    #         'https': proxy_url # https siteleri için de aynı proxy'yi kullan
-    #     }
-    #     print(f"Proxy credentials found. Using Bright Data proxy: {proxy_host}:{proxy_port}")
-    # else:
-    #     print("Proxy credentials not found in environment. Running without proxy (local test?).")
-    
-    if cf_worker_proxy:
-        print(f"Cloudflare Worker proxy found: {cf_worker_proxy}")
-        # Cloudflare Worker üzerinden istek at
-        # URL'i query parameter olarak encode et
-        import urllib.parse
-        encoded_url = urllib.parse.quote(RESMI_GAZETE_URL, safe='')
-        proxy_url = f"{cf_worker_proxy}?url={encoded_url}"
-        print(f"Using proxy URL: {proxy_url}")
+        # Requests modülünün anlayacağı proxy dict'ini oluştur
+        proxies = {
+            'http': proxy_url,
+            'https': proxy_url # https siteleri için de aynı proxy'yi kullan
+        }
+        print(f"Proxy credentials found. Using Bright Data proxy: {proxy_host}:{proxy_port}")
     else:
-        print("CF_WORKER_PROXY not found in environment. Running without proxy.")
-        proxy_url = RESMI_GAZETE_URL
+        print("Proxy credentials not found in environment. Running without proxy (local test?).")
     
     try:
         print("Fetching main page...")
         # response = requests.get(RESMI_GAZETE_URL, timeout=30, headers=HEADERS)
         response = requests.get(
-            # RESMI_GAZETE_URL, 
-            proxy_url,
+            RESMI_GAZETE_URL, 
             timeout=60, 
             headers=HEADERS, 
-            # proxies=proxies,
+            proxies=proxies,
             verify=False
         )
         response.raise_for_status()
