@@ -37,6 +37,7 @@ jobs:
           PROXY_PORT: ${{ secrets.PROXY_PORT }}
           PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
           PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
+          CF_WORKER_PROXY: ${{ secrets.CF_WORKER_PROXY }}
         run: python scraper.py
 
       # 5. Adım: Değişiklikleri (varsa) repoya commit'le ve push'la
