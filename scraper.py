@@ -7,6 +7,9 @@ import os # Dosya işlemleri için os eklendi
 import json # Durum takibi için json eklendi
 from feedgen.feed import FeedGenerator # feedgen eklendi
 
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 # --- Ayarlar ve Sabitler ---
 # Türkçe tarihleri parse edebilmek için locale ayarı
 try:
@@ -56,17 +59,23 @@ def get_todays_entries():
         print("Proxy credentials not found in environment. Running without proxy (local test?).")
     
     try:
-        print("Fetching main page...")
+        # print("Fetching main page...")
         # response = requests.get(RESMI_GAZETE_URL, timeout=30, headers=HEADERS)
+        
+        print("Fetching main page through CORS proxy...")
+        # proxy yerine CORS proxy kullanıyoruz
+        proxied_url = f"https://api.cors.lol/?url={RESMI_GAZETE_URL}"
+        
         response = requests.get(
-            RESMI_GAZETE_URL, 
+            proxied_url, 
             timeout=60, 
             headers=HEADERS, 
             proxies=proxies,
             verify=False
         )
         response.raise_for_status()
-        print("Main page fetched successfully.")
+        # print("Main page fetched successfully.")
+        print("Main page fetched successfully via CORS proxy.")
 
         soup = BeautifulSoup(response.content, 'lxml')
 
