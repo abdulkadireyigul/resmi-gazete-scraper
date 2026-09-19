@@ -3,7 +3,7 @@ name: Scrape Resmi Gazete and Update RSS
 on:
   # Zamanlanmış Çalıştırma (Günde 3 kez: UTC 05:00, 11:00, 17:00 - Türkiye saatiyle 08:00, 14:00, 20:00 gibi)
   schedule:
-    - cron: '0 5,11,17 * * *' 
+    - cron: "0 5,11,17 * * *"
   # Manuel Çalıştırma (GitHub Arayüzünden "Run workflow" butonu ile)
   workflow_dispatch:
 
@@ -11,7 +11,7 @@ jobs:
   scrape:
     runs-on: ubuntu-latest # Workflow'un çalışacağı sanal makine
     permissions:
-       contents: write # Repoya dosya yazma (commit/push) izni
+      contents: write # Repoya dosya yazma (commit/push) izni
 
     steps:
       # 1. Adım: Repodaki kodları sanal makineye indir (checkout)
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # Kullandığın Python sürümüne yakın bir sürüm seçebilirsin
+          python-version: "3.10" # Kullandığın Python sürümüne yakın bir sürüm seçebilirsin
 
       # 3. Adım: Gerekli Python kütüphanelerini yükle
       - name: Install dependencies
@@ -33,6 +33,7 @@ jobs:
       # 4. Adım: Scraper script'ini çalıştır
       - name: Run scraper
         env:
+          WORKER_URL: ${{ secrets.WORKER_URL }}
           PROXY_HOST: ${{ secrets.PROXY_HOST }}
           PROXY_PORT: ${{ secrets.PROXY_PORT }}
           PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
